@@ -1,0 +1,41 @@
+{
+  "name": "store-restrictions-management",
+  "version": "1.0.0",
+  "description": "Google Apps Script application for managing store data and restrictions with email notifications",
+  "main": "Code.gs",
+  "scripts": {
+    "deploy": "echo 'Deploy via Google Apps Script editor: Deploy -> New deployment -> Web app'"
+  },
+  "keywords": [
+    "google-apps-script",
+    "store-management",
+    "restrictions",
+    "email-notifications",
+    "dashboard",
+    "csv-import"
+  ],
+  "author": "Store Management Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nigelsiris/test"
+  },
+  "files": [
+    "Code.gs",
+    "Dashboard.html",
+    "Import.html",
+    "sample-stores.csv",
+    "README.md",
+    "QUICKSTART.md"
+  ],
+  "appsscript": {
+    "timeZone": "America/New_York",
+    "dependencies": {},
+    "exceptionLogging": "STACKDRIVER",
+    "runtimeVersion": "V8",
+    "webapp": {
+      "executeAs": "USER_DEPLOYING",
+      "access": "ANYONE"
+    }
+  }
+}

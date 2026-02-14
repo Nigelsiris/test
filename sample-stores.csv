@@ -1,0 +1,11 @@
+Store ID,Store Name,Location,Restrictions,Status
+S001,Downtown Store,New York NY,None,Active
+S002,Uptown Location,Los Angeles CA,No deliveries after 8pm,Active
+S003,Suburban Center,Chicago IL,Weekends only,Active
+S004,East Side Branch,Boston MA,Limited parking,Active
+S005,West End Shop,Seattle WA,Construction nearby - delays expected,Active
+S006,Central Plaza,Miami FL,Hurricane season restrictions,Active
+S007,North Point,Denver CO,Winter weather delays possible,Active
+S008,South Bay,San Diego CA,None,Active
+S009,Harbor View,Portland OR,Delivery hours 9am-5pm only,Inactive
+S010,Mountain Ridge,Phoenix AZ,None,Active
