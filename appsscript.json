@@ -30,6 +30,7 @@
   ],
   "appsscript": {
     "timeZone": "America/New_York",
+    "comment": "Update timeZone to match your location (e.g., America/Los_Angeles, Europe/London, Asia/Tokyo)",
     "dependencies": {},
     "exceptionLogging": "STACKDRIVER",
     "runtimeVersion": "V8",

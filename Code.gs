@@ -418,7 +418,7 @@ function deleteTempRestriction(index) {
   }
   
   const lastRow = sheet.getLastRow();
-  if (index > 0 && index < lastRow) {
+  if (index >= 0 && index + 1 <= lastRow) {
     sheet.deleteRow(index + 1);
     return { success: true, message: 'Restriction deleted successfully' };
   }
