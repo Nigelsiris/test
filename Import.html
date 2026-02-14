@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    h2 {
+      color: #667eea;
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #4a5568;
+    }
+    
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      padding: 10px;
+      border: 2px solid #e2e8f0;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 14px;
+      resize: vertical;
+    }
+    
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s;
+      margin-right: 10px;
+    }
+    
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-secondary {
+      background: #a0aec0;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: #718096;
+    }
+    
+    .message {
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    
+    .message.success {
+      background: #c6f6d5;
+      color: #22543d;
+      border-left: 4px solid #48bb78;
+    }
+    
+    .message.error {
+      background: #fed7d7;
+      color: #742a2a;
+      border-left: 4px solid #f56565;
+    }
+    
+    .instructions {
+      background: #ebf8ff;
+      border-left: 4px solid #4299e1;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+    
+    .instructions h4 {
+      color: #2c5282;
+      margin-bottom: 10px;
+    }
+    
+    .instructions ul {
+      margin-left: 20px;
+    }
+    
+    .instructions li {
+      margin: 5px 0;
+      color: #2d3748;
+    }
+    
+    .file-input {
+      display: block;
+      margin-bottom: 10px;
+    }
+    
+    .example {
+      background: #f7fafc;
+      padding: 10px;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 12px;
+      margin-top: 10px;
+      border: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📥 Import CSV Data</h2>
+    
+    <div class="instructions">
+      <h4>Instructions:</h4>
+      <ul>
+        <li>Upload a CSV file or paste CSV content below</li>
+        <li>First row should be headers: Store ID, Store Name, Location, Restrictions, Status</li>
+        <li>This will replace all existing store data</li>
+        <li>Make sure to backup your data before importing</li>
+      </ul>
+    </div>
+    
+    <div id="message"></div>
+    
+    <div class="form-group">
+      <label>Upload CSV File:</label>
+      <input type="file" id="csvFile" accept=".csv" class="file-input" onchange="handleFileSelect(event)">
+    </div>
+    
+    <div class="form-group">
+      <label>Or Paste CSV Content:</label>
+      <textarea id="csvContent" placeholder="Store ID,Store Name,Location,Restrictions,Status&#10;S001,Downtown Store,New York,None,Active&#10;S002,Uptown Location,Los Angeles,No deliveries after 8pm,Active"></textarea>
+    </div>
+    
+    <div class="example">
+      <strong>Example CSV format:</strong><br>
+      Store ID,Store Name,Location,Restrictions,Status<br>
+      S001,Downtown Store,New York NY,None,Active<br>
+      S002,Uptown Location,Los Angeles CA,No deliveries after 8pm,Active
+    </div>
+    
+    <div style="margin-top: 20px;">
+      <button class="btn btn-primary" onclick="importData()">📥 Import Data</button>
+      <button class="btn btn-secondary" onclick="google.script.host.close()">Cancel</button>
+    </div>
+  </div>
+  
+  <script>
+    function handleFileSelect(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('csvContent').value = e.target.result;
+        };
+        reader.readAsText(file);
+      }
+    }
+    
+    function importData() {
+      const csvContent = document.getElementById('csvContent').value;
+      
+      if (!csvContent.trim()) {
+        showMessage('error', 'Please provide CSV content to import.');
+        return;
+      }
+      
+      showMessage('success', 'Importing data...');
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            showMessage('success', result.message + ' You can close this window now.');
+            setTimeout(() => {
+              google.script.host.close();
+            }, 2000);
+          } else {
+            showMessage('error', result.message);
+          }
+        })
+        .withFailureHandler(function(error) {
+          showMessage('error', 'Error importing data: ' + error.message);
+        })
+        .importCSVData(csvContent);
+    }
+    
+    function showMessage(type, message) {
+      const messageDiv = document.getElementById('message');
+      messageDiv.innerHTML = `<div class="message ${type}">${message}</div>`;
+      
+      if (type === 'success') {
+        setTimeout(() => {
+          messageDiv.innerHTML = '';
+        }, 5000);
+      }
+    }
+  </script>
+</body>
+</html>

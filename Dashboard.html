@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Store Restrictions Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+    
+    .header p {
+      opacity: 0.9;
+    }
+    
+    .tabs {
+      display: flex;
+      background: #f5f5f5;
+      border-bottom: 2px solid #ddd;
+    }
+    
+    .tab {
+      flex: 1;
+      padding: 15px 20px;
+      text-align: center;
+      cursor: pointer;
+      background: #f5f5f5;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      color: #666;
+      transition: all 0.3s;
+    }
+    
+    .tab:hover {
+      background: #e8e8e8;
+    }
+    
+    .tab.active {
+      background: white;
+      color: #667eea;
+      border-bottom: 3px solid #667eea;
+    }
+    
+    .content {
+      padding: 30px;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.5s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+    }
+    
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    th {
+      background: #667eea;
+      color: white;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+    
+    tr:hover {
+      background: #f9f9f9;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s;
+      margin: 5px;
+    }
+    
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-success {
+      background: #48bb78;
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background: #38a169;
+    }
+    
+    .btn-danger {
+      background: #f56565;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background: #e53e3e;
+    }
+    
+    .btn-secondary {
+      background: #a0aec0;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: #718096;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #4a5568;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #e2e8f0;
+      border-radius: 5px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    .message {
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    
+    .message.success {
+      background: #c6f6d5;
+      color: #22543d;
+      border-left: 4px solid #48bb78;
+    }
+    
+    .message.error {
+      background: #fed7d7;
+      color: #742a2a;
+      border-left: 4px solid #f56565;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #667eea;
+    }
+    
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .card h3 {
+      color: #667eea;
+      margin-bottom: 15px;
+    }
+    
+    .action-buttons {
+      text-align: right;
+      margin-top: 20px;
+    }
+    
+    .editable {
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 3px;
+      transition: background 0.3s;
+    }
+    
+    .editable:hover {
+      background: #f0f0f0;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .badge-active {
+      background: #c6f6d5;
+      color: #22543d;
+    }
+    
+    .badge-inactive {
+      background: #fed7d7;
+      color: #742a2a;
+    }
+    
+    .table-container {
+      overflow-x: auto;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    
+    .instructions {
+      background: #ebf8ff;
+      border-left: 4px solid #4299e1;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+    
+    .instructions h4 {
+      color: #2c5282;
+      margin-bottom: 10px;
+    }
+    
+    .instructions ul {
+      margin-left: 20px;
+    }
+    
+    .instructions li {
+      margin: 5px 0;
+      color: #2d3748;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🏪 Store Restrictions Dashboard</h1>
+      <p>Manage your stores, restrictions, and notifications in real-time</p>
+    </div>
+    
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('stores')">Stores</button>
+      <button class="tab" onclick="switchTab('restrictions')">Temp Restrictions</button>
+      <button class="tab" onclick="switchTab('add-store')">Add Store</button>
+      <button class="tab" onclick="switchTab('add-restriction')">Add Restriction</button>
+    </div>
+    
+    <div class="content">
+      <!-- Stores Tab -->
+      <div id="stores" class="tab-content active">
+        <div class="instructions">
+          <h4>💡 Quick Tips:</h4>
+          <ul>
+            <li>Click on any cell to edit store information</li>
+            <li>Changes are saved immediately and notifications are sent automatically</li>
+            <li>Use the refresh button to reload data from the spreadsheet</li>
+          </ul>
+        </div>
+        <div class="action-buttons">
+          <button class="btn btn-primary" onclick="loadStores()">🔄 Refresh Data</button>
+        </div>
+        <div class="table-container">
+          <table id="storesTable">
+            <thead>
+              <tr>
+                <th>Store ID</th>
+                <th>Store Name</th>
+                <th>Location</th>
+                <th>Restrictions</th>
+                <th>Status</th>
+                <th>Last Updated</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="storesTableBody">
+              <tr>
+                <td colspan="7" class="loading">
+                  <div class="spinner"></div>
+                  Loading stores...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Temp Restrictions Tab -->
+      <div id="restrictions" class="tab-content">
+        <div class="instructions">
+          <h4>📅 Temporary Restrictions:</h4>
+          <ul>
+            <li>View all active temporary restrictions for stores</li>
+            <li>These are time-limited restrictions that expire automatically</li>
+            <li>Use the refresh button to see the latest restrictions</li>
+          </ul>
+        </div>
+        <div class="action-buttons">
+          <button class="btn btn-primary" onclick="loadTempRestrictions()">🔄 Refresh Data</button>
+        </div>
+        <div class="table-container">
+          <table id="restrictionsTable">
+            <thead>
+              <tr>
+                <th>Store ID</th>
+                <th>Restriction</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Created By</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="restrictionsTableBody">
+              <tr>
+                <td colspan="7" class="loading">
+                  <div class="spinner"></div>
+                  Loading restrictions...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Add Store Tab -->
+      <div id="add-store" class="tab-content">
+        <div class="card">
+          <h3>Add New Store</h3>
+          <div id="addStoreMessage"></div>
+          <form id="addStoreForm" onsubmit="submitAddStore(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="newStoreId">Store ID *</label>
+                <input type="text" id="newStoreId" required placeholder="e.g., S004">
+              </div>
+              <div class="form-group">
+                <label for="newStoreName">Store Name *</label>
+                <input type="text" id="newStoreName" required placeholder="e.g., Central Store">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="newLocation">Location *</label>
+                <input type="text" id="newLocation" required placeholder="e.g., San Francisco, CA">
+              </div>
+              <div class="form-group">
+                <label for="newStatus">Status</label>
+                <select id="newStatus">
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="newRestrictions">Restrictions</label>
+              <textarea id="newRestrictions" rows="3" placeholder="Enter any restrictions or leave blank for none"></textarea>
+            </div>
+            <div class="action-buttons">
+              <button type="submit" class="btn btn-success">✅ Add Store</button>
+              <button type="button" class="btn btn-secondary" onclick="document.getElementById('addStoreForm').reset()">Clear</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Add Restriction Tab -->
+      <div id="add-restriction" class="tab-content">
+        <div class="card">
+          <h3>Add Temporary Restriction</h3>
+          <div id="addRestrictionMessage"></div>
+          <form id="addRestrictionForm" onsubmit="submitAddRestriction(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="restrictionStoreId">Store ID *</label>
+                <input type="text" id="restrictionStoreId" required placeholder="e.g., S001">
+              </div>
+              <div class="form-group">
+                <label for="restrictionCreatedBy">Your Name</label>
+                <input type="text" id="restrictionCreatedBy" placeholder="Your name (optional)">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="restrictionText">Restriction *</label>
+              <textarea id="restrictionText" rows="3" required placeholder="Describe the temporary restriction"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="restrictionStartDate">Start Date *</label>
+                <input type="date" id="restrictionStartDate" required>
+              </div>
+              <div class="form-group">
+                <label for="restrictionEndDate">End Date *</label>
+                <input type="date" id="restrictionEndDate" required>
+              </div>
+            </div>
+            <div class="action-buttons">
+              <button type="submit" class="btn btn-success">✅ Add Restriction</button>
+              <button type="button" class="btn btn-secondary" onclick="document.getElementById('addRestrictionForm').reset()">Clear</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tab switching
+    function switchTab(tabName) {
+      // Update tab buttons
+      const tabs = document.querySelectorAll('.tab');
+      tabs.forEach(tab => tab.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      // Update tab content
+      const contents = document.querySelectorAll('.tab-content');
+      contents.forEach(content => content.classList.remove('active'));
+      document.getElementById(tabName).classList.add('active');
+      
+      // Load data for the active tab
+      if (tabName === 'stores') {
+        loadStores();
+      } else if (tabName === 'restrictions') {
+        loadTempRestrictions();
+      }
+    }
+    
+    // Load stores on page load
+    window.onload = function() {
+      loadStores();
+      setDefaultDates();
+    };
+    
+    // Set default dates for restriction form
+    function setDefaultDates() {
+      const today = new Date().toISOString().split('T')[0];
+      const nextWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      document.getElementById('restrictionStartDate').value = today;
+      document.getElementById('restrictionEndDate').value = nextWeek;
+    }
+    
+    // Load all stores
+    function loadStores() {
+      const tbody = document.getElementById('storesTableBody');
+      tbody.innerHTML = '<tr><td colspan="7" class="loading"><div class="spinner"></div>Loading stores...</td></tr>';
+      
+      google.script.run
+        .withSuccessHandler(displayStores)
+        .withFailureHandler(showError)
+        .getStoreData();
+    }
+    
+    // Display stores in table
+    function displayStores(stores) {
+      const tbody = document.getElementById('storesTableBody');
+      
+      if (stores.error) {
+        tbody.innerHTML = `<tr><td colspan="7" class="message error">${stores.error}</td></tr>`;
+        return;
+      }
+      
+      if (stores.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;">No stores found. Add your first store!</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = stores.map(store => `
+        <tr>
+          <td>${escapeHtml(store['Store ID'])}</td>
+          <td class="editable" onclick="editCell(this, '${store['Store ID']}', 'Store Name')">${escapeHtml(store['Store Name'])}</td>
+          <td class="editable" onclick="editCell(this, '${store['Store ID']}', 'Location')">${escapeHtml(store['Location'])}</td>
+          <td class="editable" onclick="editCell(this, '${store['Store ID']}', 'Restrictions')">${escapeHtml(store['Restrictions'])}</td>
+          <td>
+            <span class="badge ${store['Status'] === 'Active' ? 'badge-active' : 'badge-inactive'}">
+              ${escapeHtml(store['Status'])}
+            </span>
+          </td>
+          <td>${formatDate(store['Last Updated'])}</td>
+          <td>
+            <button class="btn btn-danger" onclick="deleteStoreConfirm('${store['Store ID']}')">🗑️ Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+    
+    // Load temporary restrictions
+    function loadTempRestrictions() {
+      const tbody = document.getElementById('restrictionsTableBody');
+      tbody.innerHTML = '<tr><td colspan="7" class="loading"><div class="spinner"></div>Loading restrictions...</td></tr>';
+      
+      google.script.run
+        .withSuccessHandler(displayTempRestrictions)
+        .withFailureHandler(showError)
+        .getTempRestrictions();
+    }
+    
+    // Display temporary restrictions
+    function displayTempRestrictions(restrictions) {
+      const tbody = document.getElementById('restrictionsTableBody');
+      
+      if (restrictions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;">No temporary restrictions found.</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = restrictions.map((restriction, index) => `
+        <tr>
+          <td>${escapeHtml(restriction['Store ID'])}</td>
+          <td>${escapeHtml(restriction['Restriction'])}</td>
+          <td>${formatDate(restriction['Start Date'])}</td>
+          <td>${formatDate(restriction['End Date'])}</td>
+          <td>${escapeHtml(restriction['Created By'])}</td>
+          <td>
+            <span class="badge ${restriction['Status'] === 'Active' ? 'badge-active' : 'badge-inactive'}">
+              ${escapeHtml(restriction['Status'])}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-danger" onclick="deleteRestrictionConfirm(${index})">🗑️ Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+    
+    // Edit cell inline
+    function editCell(cell, storeId, field) {
+      const currentValue = cell.textContent;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = currentValue;
+      input.style.width = '100%';
+      input.style.padding = '5px';
+      
+      input.onblur = function() {
+        const newValue = input.value;
+        if (newValue !== currentValue) {
+          cell.textContent = 'Saving...';
+          google.script.run
+            .withSuccessHandler(function(result) {
+              if (result.success) {
+                cell.textContent = newValue;
+                showMessage('success', 'Store updated successfully! Notification email sent.');
+              } else {
+                cell.textContent = currentValue;
+                showMessage('error', result.message);
+              }
+            })
+            .withFailureHandler(function(error) {
+              cell.textContent = currentValue;
+              showError(error);
+            })
+            .updateStore(storeId, field, newValue);
+        } else {
+          cell.textContent = currentValue;
+        }
+      };
+      
+      input.onkeydown = function(e) {
+        if (e.key === 'Enter') {
+          input.blur();
+        } else if (e.key === 'Escape') {
+          cell.textContent = currentValue;
+        }
+      };
+      
+      cell.textContent = '';
+      cell.appendChild(input);
+      input.focus();
+    }
+    
+    // Submit add store form
+    function submitAddStore(event) {
+      event.preventDefault();
+      
+      const storeData = {
+        storeId: document.getElementById('newStoreId').value,
+        storeName: document.getElementById('newStoreName').value,
+        location: document.getElementById('newLocation').value,
+        restrictions: document.getElementById('newRestrictions').value || 'None',
+        status: document.getElementById('newStatus').value
+      };
+      
+      showMessage('success', 'Adding store...', 'addStoreMessage');
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            showMessage('success', result.message, 'addStoreMessage');
+            document.getElementById('addStoreForm').reset();
+            loadStores();
+          } else {
+            showMessage('error', result.message, 'addStoreMessage');
+          }
+        })
+        .withFailureHandler(function(error) {
+          showMessage('error', 'Error: ' + error.message, 'addStoreMessage');
+        })
+        .addStore(storeData);
+    }
+    
+    // Submit add restriction form
+    function submitAddRestriction(event) {
+      event.preventDefault();
+      
+      const restrictionData = {
+        storeId: document.getElementById('restrictionStoreId').value,
+        restriction: document.getElementById('restrictionText').value,
+        startDate: document.getElementById('restrictionStartDate').value,
+        endDate: document.getElementById('restrictionEndDate').value,
+        createdBy: document.getElementById('restrictionCreatedBy').value
+      };
+      
+      showMessage('success', 'Adding restriction...', 'addRestrictionMessage');
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            showMessage('success', result.message + ' Notification email sent.', 'addRestrictionMessage');
+            document.getElementById('addRestrictionForm').reset();
+            setDefaultDates();
+            loadTempRestrictions();
+          } else {
+            showMessage('error', result.message, 'addRestrictionMessage');
+          }
+        })
+        .withFailureHandler(function(error) {
+          showMessage('error', 'Error: ' + error.message, 'addRestrictionMessage');
+        })
+        .addTempRestriction(restrictionData);
+    }
+    
+    // Delete store with confirmation
+    function deleteStoreConfirm(storeId) {
+      if (confirm('Are you sure you want to delete store ' + storeId + '? This action cannot be undone.')) {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result.success) {
+              showMessage('success', result.message);
+              loadStores();
+            } else {
+              showMessage('error', result.message);
+            }
+          })
+          .withFailureHandler(showError)
+          .deleteStore(storeId);
+      }
+    }
+    
+    // Delete restriction with confirmation
+    function deleteRestrictionConfirm(index) {
+      if (confirm('Are you sure you want to delete this restriction?')) {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result.success) {
+              showMessage('success', result.message);
+              loadTempRestrictions();
+            } else {
+              showMessage('error', result.message);
+            }
+          })
+          .withFailureHandler(showError)
+          .deleteTempRestriction(index);
+      }
+    }
+    
+    // Show message
+    function showMessage(type, message, elementId = null) {
+      const messageHtml = `<div class="message ${type}">${message}</div>`;
+      
+      if (elementId) {
+        document.getElementById(elementId).innerHTML = messageHtml;
+        setTimeout(() => {
+          document.getElementById(elementId).innerHTML = '';
+        }, 5000);
+      } else {
+        // Show at top of stores table
+        const tbody = document.getElementById('storesTableBody');
+        const messageRow = document.createElement('tr');
+        messageRow.innerHTML = `<td colspan="7">${messageHtml}</td>`;
+        tbody.parentNode.insertBefore(messageRow, tbody);
+        setTimeout(() => {
+          messageRow.remove();
+        }, 5000);
+      }
+    }
+    
+    // Show error
+    function showError(error) {
+      showMessage('error', 'Error: ' + error.message);
+    }
+    
+    // Utility functions
+    function escapeHtml(text) {
+      if (text === null || text === undefined) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    function formatDate(date) {
+      if (!date) return '';
+      const d = new Date(date);
+      return d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+    }
+  </script>
+</body>
+</html>
