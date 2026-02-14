@@ -4,7 +4,7 @@
  */
 
 // Configuration
-const SHEET_NAME = 'Store Data';
+const SHEET_NAME = 'Store Info';
 const EMAIL_RECIPIENTS_SHEET = 'Email Recipients';
 const TEMP_RESTRICTIONS_SHEET = 'Temporary Restrictions';
 
@@ -14,7 +14,7 @@ const TEMP_RESTRICTIONS_SHEET = 'Temporary Restrictions';
 function initializeSheets() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   
-  // Create Store Data sheet if it doesn't exist
+  // Create Store Info sheet if it doesn't exist
   let storeSheet = ss.getSheetByName(SHEET_NAME);
   if (!storeSheet) {
     storeSheet = ss.insertSheet(SHEET_NAME);
@@ -89,7 +89,7 @@ function getStoreData() {
   const sheet = ss.getSheetByName(SHEET_NAME);
   
   if (!sheet) {
-    return { error: 'Store Data sheet not found. Please initialize sheets first.' };
+    return { error: 'Store Info sheet not found. Please initialize sheets first.' };
   }
   
   const data = sheet.getDataRange().getValues();
@@ -143,7 +143,7 @@ function updateStore(storeId, field, value) {
   const sheet = ss.getSheetByName(SHEET_NAME);
   
   if (!sheet) {
-    return { success: false, message: 'Store Data sheet not found' };
+    return { success: false, message: 'Store Info sheet not found' };
   }
   
   const data = sheet.getDataRange().getValues();
@@ -182,7 +182,7 @@ function addStore(storeData) {
   const sheet = ss.getSheetByName(SHEET_NAME);
   
   if (!sheet) {
-    return { success: false, message: 'Store Data sheet not found' };
+    return { success: false, message: 'Store Info sheet not found' };
   }
   
   const newRow = [
@@ -340,7 +340,7 @@ function importCSVData(csvContent) {
   const sheet = ss.getSheetByName(SHEET_NAME);
   
   if (!sheet) {
-    return { success: false, message: 'Store Data sheet not found' };
+    return { success: false, message: 'Store Info sheet not found' };
   }
   
   try {
@@ -390,7 +390,7 @@ function deleteStore(storeId) {
   const sheet = ss.getSheetByName(SHEET_NAME);
   
   if (!sheet) {
-    return { success: false, message: 'Store Data sheet not found' };
+    return { success: false, message: 'Store Info sheet not found' };
   }
   
   const data = sheet.getDataRange().getValues();
