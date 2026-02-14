@@ -6,7 +6,7 @@ The Store Management Dashboard provides a modern, intuitive interface for managi
 
 ### Main Features
 
-#### 1. **Stores Tab** - View & Edit Store Data
+#### 1. **Stores Tab** - View & Edit Store Info
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │  🏪 Store Restrictions Dashboard                               │
@@ -139,7 +139,7 @@ Please review the changes in the Store Management Dashboard.
 
 ## 📊 Data Structure
 
-### Store Data Sheet
+### Store Info Sheet
 | Column | Type | Description |
 |--------|------|-------------|
 | Store ID | Text | Unique identifier (e.g., S001) |

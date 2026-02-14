@@ -22,7 +22,7 @@ Use this checklist to ensure your Store Management System is properly deployed a
 - [ ] Clicked "Initialize Sheets" from menu
 - [ ] Authorized the application when prompted
 - [ ] Verified three sheets were created:
-  - [ ] Store Data
+  - [ ] Store Info
   - [ ] Email Recipients
   - [ ] Temporary Restrictions
 

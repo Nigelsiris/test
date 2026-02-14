@@ -91,7 +91,7 @@ Create the following files in the Apps Script editor:
 2. You should see a new menu called **Store Management**
 3. Click **Store Management** → **Initialize Sheets**
 4. This creates three sheets:
-   - **Store Data** - Main store information
+   - **Store Info** - Main store information
    - **Email Recipients** - People to notify on updates
    - **Temporary Restrictions** - Time-limited restrictions
 
@@ -162,7 +162,7 @@ Edit the `sendUpdateNotification()` and `sendRestrictionNotification()` function
 ### Adding Fields
 
 To add new fields to stores:
-1. Add the column to the "Store Data" sheet
+1. Add the column to the "Store Info" sheet
 2. Update the `initializeSheets()` function
 3. Update the Dashboard.html table headers
 4. Update the `displayStores()` function
